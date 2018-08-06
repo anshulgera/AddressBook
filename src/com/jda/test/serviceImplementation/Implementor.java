@@ -28,8 +28,8 @@ public class Implementor implements Service{
 		System.out.println("Enter name of AddressBook file : ");
 		String addressBookName = utility.inputString();
 		File file = new File("/home/bridgelabz/git/AddressBook/AddressBooks/" + addressBookName + ".json");
-		file.createNewFile();
-		if(file.createNewFile()){
+		boolean fileCreated = file.createNewFile();
+		if(fileCreated){
 			System.out.println("New AddressBook created.");
 		}else{
 			System.out.println("AddressBook with this name already exists.");
@@ -47,21 +47,26 @@ public class Implementor implements Service{
 		}
 		System.out.println("Enter name of address book to operate on :");
 		String fileName = utility.inputString();
-		int correctName = 0;
+		boolean correctName = true;
 		for(File f:file.listFiles()){
-			if(f.isFile() && f.getName()==fileName){
-				correctName = 1;
+			if(f.isFile() && f.getName()==fileName+".json"){
+				correctName = true;
 				break;
 			}
 		}
-		if(correctName!=1){
+		if(!correctName){
 			System.out.println("No such file.");
 			return;
 		}
 		
 		ArrayList<PersonData> addressBookData = new ArrayList<PersonData>();
-		File addressBookFile = new File("/home/bridgelabz/git/AddressBook/AddressBooks" + fileName);
-		addressBookData = mapper.readValue(addressBookFile, new TypeReference<ArrayList<PersonData>>(){});
+		File addressBookFile = new File("/home/bridgelabz/git/AddressBook/AddressBooks/" + fileName+".json");
+		if(addressBookFile.length()==0){
+			System.out.println("File is empty");
+		}else{
+			addressBookData = mapper.readValue(addressBookFile, new TypeReference<ArrayList<PersonData>>(){});
+		}
+		
 		
 		System.out.println("1.Add 2.Edit 3. Delete 4.Sort By Name 5. Sort By Zipcode 6. Print 7.Save 8.SaveAs");
 		Integer choice = utility.inputPositiveInteger();
@@ -71,19 +76,19 @@ public class Implementor implements Service{
 			}
 		switch(choice){
 		case 1:
-			add(addressBookData);
+			add(fileName , addressBookData);
 			break;
 		case 2:
-			edit(addressBookData);
+			edit(fileName , addressBookData);
 			break;
 		case 3:
-			delete(addressBookData);
+			delete(fileName, addressBookData);
 			break;
 		case 4:
-			sortByName(addressBookData);
+			sortByName(fileName, addressBookData);
 			break;
 		case 5:
-			sortByZipcode(addressBookData);
+			sortByZipcode(fileName, addressBookData);
 			break;
 		case 6:
 			print(addressBookData);
@@ -123,6 +128,7 @@ public class Implementor implements Service{
 	private void save(String fileName, ArrayList<PersonData> addressBookData) throws FileNotFoundException {
 		JsonUtil util = new JsonUtil();
 		String output = util.convertJavaToJson(addressBookData);
+		System.out.println(output);
 		PrintWriter pw = new PrintWriter("/home/bridgelabz/git/AddressBook/AddressBooks/" + fileName  + ".json");
 		pw.write(output);
 		pw.flush();
@@ -143,16 +149,28 @@ public class Implementor implements Service{
 		
 	}
 
-	private void sortByZipcode(ArrayList<PersonData> addressBookData) {
+	private void sortByZipcode(String fileName, ArrayList<PersonData> addressBookData) throws FileNotFoundException {
 		Collections.sort(addressBookData, new CustomComparatorZip());
+		System.out.println("Enter s to save, none to exit.");
+		String exitChoice = utility.inputString().toLowerCase();
+		if(exitChoice=="s"){
+			save(fileName, addressBookData);
+		}
+		return;
 		
 	}
 
-	private void sortByName(ArrayList<PersonData> addressBookData) {
+	private void sortByName(String fileName, ArrayList<PersonData> addressBookData) throws FileNotFoundException {
 		Collections.sort(addressBookData, new CustomComparatorName());
+		System.out.println("Enter s to save, none to exit.");
+		String exitChoice = utility.inputString().toLowerCase();
+		if(exitChoice=="s"){
+			save(fileName, addressBookData);
+		}
+		return;
 	}
 
-	private void delete(ArrayList<PersonData> addressBookData) {
+	private void delete(String fileName, ArrayList<PersonData> addressBookData) throws FileNotFoundException {
 		System.out.println("Enter first name of person to delete from records.");
 		String firstName = utility.inputString();
 		boolean personExist = false;
@@ -169,10 +187,16 @@ public class Implementor implements Service{
 			System.out.println("No such person");
 			return;
 		}
+		System.out.println("Enter s to save, none to exit.");
+		String exitChoice = utility.inputString().toLowerCase();
+		if(exitChoice=="s"){
+			save(fileName, addressBookData);
+		}
+		return;
 		
 	}
 
-	private void edit(ArrayList<PersonData> addressBookData) {
+	private void edit(String fileName, ArrayList<PersonData> addressBookData) throws FileNotFoundException {
 		
 		System.out.println("Enter person's first name : ");
 		String firstName = utility.inputString();
@@ -251,11 +275,16 @@ public class Implementor implements Service{
 				break;
 			}
 			}
+		System.out.println("Enter s to save, none to exit.");
+		String exitChoice = utility.inputString().toLowerCase();
+		if(exitChoice=="s"){
+			save(fileName, addressBookData);
+		}
 		return;
 		
 	}
 
-	private void add(ArrayList<PersonData> addressBookData) {
+	private void add(String fileName, ArrayList<PersonData> addressBookData) throws FileNotFoundException {
 	PersonData  person = new PersonData();
 		System.out.println("First Name :");
 	String firstName = utility.inputString();
@@ -268,8 +297,11 @@ public class Implementor implements Service{
 	person.setNumber(mobNumber);
 	
 	Address address = new Address();
-	int zipcode = utility.inputZipcode();
+	System.out.println("Enter zip code :");
+	Integer zipcode = utility.inputZipcode();
+	System.out.println("Enter city");
 	String city = utility.inputString();
+	System.out.println("Enter state");
 	String state = utility.inputString();
 	address.setZipcode(zipcode);
 	address.setCity(city);
@@ -277,7 +309,13 @@ public class Implementor implements Service{
 	
 	person.setAddress(address);
 	addressBookData.add(person);
-		
+	System.out.println(firstName + " Added.");	
+	System.out.println("Enter 1 to save, none to exit.");
+	int  exitChoice = utility.inputPositiveInteger();
+	if(exitChoice==1){
+		save(fileName, addressBookData);
+	}
+	return;
 	}
 
 }

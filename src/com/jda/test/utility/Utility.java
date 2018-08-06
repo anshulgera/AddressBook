@@ -44,16 +44,15 @@ public class Utility {
 
 	public int inputZipcode() {
 		String input = scanner.nextLine();
-		Integer zipcode;
 		while(true){
 			if(input.length()==6){
-				zipcode = Integer.parseInt(input);
-				break;
+				Integer zipcode = Integer.parseInt(input);
+				return zipcode;
 			}
 			else{
 				System.out.println("Zipcode should be of 6 digits.");
+				input = scanner.nextLine();
 			}
 		}
-		return zipcode;
 	}
 }

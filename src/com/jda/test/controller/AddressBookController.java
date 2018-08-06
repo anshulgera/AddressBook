@@ -11,7 +11,7 @@ public class AddressBookController {
 		Utility utility = new Utility();
 		Service service = new Implementor();
 		while(true){
-			System.out.print("1.Creat new AddressBook"
+			System.out.println("1.Creat new AddressBook"
 					+ " 2. Open Existing AddressBook");
 			Integer choice = utility.inputPositiveInteger();
 			if(choice>0 && choice<3){
