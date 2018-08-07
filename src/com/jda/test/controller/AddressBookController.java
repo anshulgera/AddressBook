@@ -1,15 +1,18 @@
 package com.jda.test.controller;
 
-import java.io.IOException;
-
 import com.jda.test.service.Service;
 import com.jda.test.serviceImplementation.Implementor;
 import com.jda.test.utility.Utility;
 
 public class AddressBookController {
-	static public void main(String[] args) throws IOException{
+	static public void main(String[] args) throws Exception{
 		Utility utility = new Utility();
 		Service service = new Implementor();
+		System.out.println("Enter 1 for JDBC.");
+		int temp = utility.inputPositiveInteger();
+		if(temp==1) {
+			service.addressBookJDBC();
+		}else {
 		while(true){
 			System.out.println("1.Creat new AddressBook"
 					+ " 2. Open Existing AddressBook");
@@ -27,6 +30,7 @@ public class AddressBookController {
 			}else{
 				System.out.println("Invalid Input");
 			}
+		}
 		}
 	}
 }

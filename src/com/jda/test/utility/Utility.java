@@ -55,4 +55,11 @@ public class Utility {
 			}
 		}
 	}
+	public long inputLong() {
+		long input = scanner.nextLong();
+		return input;
+	}
+	public void emptyInput() {
+		scanner.nextLine();
+	}
 }

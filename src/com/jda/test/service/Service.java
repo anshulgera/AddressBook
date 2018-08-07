@@ -9,4 +9,5 @@ import org.codehaus.jackson.map.JsonMappingException;
 public interface Service {
 	public void createAddressBook() throws IOException;
 	public void openAddressBook() throws FileNotFoundException, JsonParseException, JsonMappingException, IOException;
+	public void addressBookJDBC() throws Exception;
 }
